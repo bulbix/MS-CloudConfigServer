@@ -45,7 +45,7 @@ jar {
 }
 
 archivesBaseName = 'ms-cloudconfigserver-bdm'
-group = 'com.bancoazteca.bdm.cloudconfigserver'
+group = 'com.bancoazteca.ms'
 description = """MS-CloudConfigServer-BDM"""
 version = "${snapshotVersion}"
 
