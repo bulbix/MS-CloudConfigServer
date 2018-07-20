@@ -41,7 +41,7 @@ configurations.all {
 
 jar {
 	baseName = 'ms-cloudconfigserver-bdm'
-	version = '1.0.0'
+	version = '0.0.1'
 }
 
 archivesBaseName = 'ms-cloudconfigserver-bdm'
@@ -52,6 +52,29 @@ version = "${snapshotVersion}"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+artifactory {
+	contextUrl = "${artifactory_contextUrl}"
+	publish {
+		repository {
+			 if (project.version.endsWith('-SNAPSHOT'))
+				  repoKey = "${artifactory_context_wallet}"
+			else
+				  repoKey = "${artifactory_context_wallet}"
+			  
+			username = "${artifactory_user}"
+			password = "${artifactory_password}"
+			ivy {
+				ivyLayout = '[organization]/[module]/ivy-[revision].xml'
+				artifactLayout = '[organization]/[module]/[revision]/[module]-[revision](-[classifier]).[ext]'
+				mavenCompatible = true //Convert any dots in an [organization] layout value to path separators, similar to Maven's groupId-to-path conversion. True if not specified
+			  }
+		}
+		defaults {
+			publishConfigs('archives')
+			properties = ['qa.level': 'unspecifiedbasic', 'dev.team' : 'core']
+		}
+	}
+}
 	
 task sourceJar(type: Jar) {
 	from sourceSets.main.allJava
