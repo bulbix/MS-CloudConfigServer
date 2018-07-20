@@ -11,69 +11,62 @@ buildscript {
 	}
 }
 
-repositories {
-	maven {
-		url "${artifactory_contextUrl}${artifactory_context_repo}"
-	}
-}
-
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
 apply plugin: 'maven-publish'
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "maven"
-apply plugin: 'io.spring.dependency-management'
 
-dependencies {	
-	
-	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'1.5.14.RELEASE')
-	compile(group: 'org.springframework.boot', name: 'spring-boot-starter-security', version:'1.5.14.RELEASE')
-	compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'1.5.14.RELEASE')
-	compile group: 'org.springframework.cloud', name: 'spring-cloud-config-server', version: '1.4.4.RELEASE'
-	
-}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 configurations.all {
 	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 	resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
 }
 
+
+repositories {
+	maven {
+		url "${artifactory_contextUrl}${artifactory_context_repo}"
+	}
+}
+
+dependencies {	
+	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'1.5.14.RELEASE')
+	compile (group: 'org.springframework.boot', name: 'spring-boot-starter-security', version:'1.5.14.RELEASE')
+	compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'1.5.14.RELEASE')
+	compile (group: 'org.springframework.cloud', name: 'spring-cloud-config-server', version: '1.4.4.RELEASE')
+}
+
 jar {
 	baseName = 'ms-cloudconfigserver-bdm'
-	version = '0.0.1'
+	version = "${snapshotVersion}"
 }
 
 archivesBaseName = 'ms-cloudconfigserver-bdm'
 group = 'com.bancoazteca.ms'
-description = """MS-CloudConfigServer-BDM"""
 version = "${snapshotVersion}"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 artifactory {
-	contextUrl = "${artifactory_contextUrl}"
-	publish {
-		repository {
-			 if (project.version.endsWith('-SNAPSHOT'))
-				  repoKey = "${artifactory_context_wallet}"
-			else
-				  repoKey = "${artifactory_context_wallet}"
-			  
-			username = "${artifactory_user}"
-			password = "${artifactory_password}"
-			ivy {
-				ivyLayout = '[organization]/[module]/ivy-[revision].xml'
-				artifactLayout = '[organization]/[module]/[revision]/[module]-[revision](-[classifier]).[ext]'
-				mavenCompatible = true //Convert any dots in an [organization] layout value to path separators, similar to Maven's groupId-to-path conversion. True if not specified
-			  }
-		}
-		defaults {
-			publishConfigs('archives')
-			properties = ['qa.level': 'unspecifiedbasic', 'dev.team' : 'core']
-		}
-	}
+  contextUrl = "${artifactory_contextUrl}"   
+  publish {
+    contextUrl = "${artifactory_contextUrl}"   
+    repository {
+      	repoKey = "${artifactory_snapshot_bazd}"   
+      	username = "${artifactory_user}"
+		password = "${artifactory_password}"
+      ivy {
+        ivyLayout = '[organization]/[module]/[revision]/[type]s/ivy-[revision].xml'
+        artifactLayout = '[organization]/[module]/[revision]/[module]-[revision](-[classifier]).[ext]'
+        mavenCompatible = true 
+      }
+    }
+    defaults {
+        publishConfigs('archives', 'published')                   
+        properties = ['qa.level': 'basic', 'q.os': 'win32, deb, osx']
+        
+    }
+  }
 }
 	
 task sourceJar(type: Jar) {
